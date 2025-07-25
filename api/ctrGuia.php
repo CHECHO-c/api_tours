@@ -85,12 +85,12 @@ switch ($method) {
     $data = json_decode(file_get_contents("php://input"), true);
     if (!$data || !is_array($data)) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Datos JSON inv 1lidos o vac 1os']);
+        echo json_encode(['success' => false, 'error' => 'Datos JSON invalidos o vacios']);
         exit();
     }
     if (!isset($pdo)) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'Error interno: conexi 1n a base de datos no disponible']);
+        echo json_encode(['success' => false, 'error' => 'Error interno: conexion a base de datos no disponible']);
         exit();
     }
     try {
@@ -106,17 +106,17 @@ switch ($method) {
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => 'Error en el servidor', 'details' => $e->getMessage()]);
     }
-    break;
+    break;//zxd
   case 'DELETE':
     $identificacion = $id ?? null;
     if (!$identificacion || !is_numeric($identificacion)) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'ID inv 1lido o no proporcionado']);
+        echo json_encode(['success' => false, 'error' => 'ID invalido o no proporcionado']);
         exit();
     }
     if (!isset($pdo)) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'Error interno: conexi 1n a base de datos no disponible']);
+        echo json_encode(['success' => false, 'error' => 'Error interno: conexion a base de datos no disponible']);
         exit();
     }
     try {

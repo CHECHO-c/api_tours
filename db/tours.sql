@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-07-2025 a las 03:31:31
+-- Tiempo de generación: 25-07-2025 a las 18:01:28
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -40,9 +40,7 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`documento`, `nombres`, `apellidos`, `telefono`, `email`) VALUES
-(0, 'lopez', 'zapata', 234123441, 'lopez@gmail.com'),
-(112542, 'lopez', 'zapata', 1234213, 'lopez@gmail.com'),
-(542215, 'guarin', 'peruano', 542215, 'guarin@gmail.com');
+(123, 'lopez', 'zapata', 234123441, 'lopez@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -57,13 +55,6 @@ CREATE TABLE `guias` (
   `telefono` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Volcado de datos para la tabla `guias`
---
-
-INSERT INTO `guias` (`identificacion`, `nombres`, `apellidos`, `telefono`) VALUES
-(123, 'pepe', 'loco', 12345);
-
 -- --------------------------------------------------------
 
 --
@@ -74,16 +65,9 @@ CREATE TABLE `reservas` (
   `id` int(11) NOT NULL,
   `fecha_reserva` datetime DEFAULT NULL,
   `total` double(13,2) DEFAULT NULL,
-  `cliente_documento` int(11) NOT NULL,
+  `cliente_numero_documento` int(11) NOT NULL,
   `estado` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `reservas`
---
-
-INSERT INTO `reservas` (`id`, `fecha_reserva`, `total`, `cliente_documento`, `estado`) VALUES
-(1, '2025-07-22 15:38:58', 864.00, 112542, 'Eliminado');
 
 -- --------------------------------------------------------
 
@@ -101,14 +85,6 @@ CREATE TABLE `tours` (
   `guias_identificacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Volcado de datos para la tabla `tours`
---
-
-INSERT INTO `tours` (`id`, `nombre`, `ciudad`, `descripcion`, `precio`, `cupos_totales`, `guias_identificacion`) VALUES
-(1, 'pepe', 'lol', 'es un tour', 432.00, 28, 123),
-(2, 'lola', 'pro', 'es un tour', 432.00, 30, 123);
-
 -- --------------------------------------------------------
 
 --
@@ -120,13 +96,6 @@ CREATE TABLE `tours_has_reservas` (
   `reserva_id` int(11) NOT NULL,
   `cantidad_personas` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `tours_has_reservas`
---
-
-INSERT INTO `tours_has_reservas` (`tour_id`, `reserva_id`, `cantidad_personas`) VALUES
-(2, 1, 2);
 
 --
 -- Índices para tablas volcadas
@@ -149,7 +118,7 @@ ALTER TABLE `guias`
 --
 ALTER TABLE `reservas`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `cliente_documento` (`cliente_documento`);
+  ADD KEY `cliente_numero_documento` (`cliente_numero_documento`);
 
 --
 -- Indices de la tabla `tours`
@@ -190,7 +159,7 @@ ALTER TABLE `tours`
 -- Filtros para la tabla `reservas`
 --
 ALTER TABLE `reservas`
-  ADD CONSTRAINT `reservas_ibfk_1` FOREIGN KEY (`cliente_documento`) REFERENCES `clientes` (`documento`);
+  ADD CONSTRAINT `reservas_ibfk_1` FOREIGN KEY (`cliente_numero_documento`) REFERENCES `clientes` (`documento`);
 
 --
 -- Filtros para la tabla `tours`
