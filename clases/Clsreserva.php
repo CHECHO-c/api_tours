@@ -15,7 +15,10 @@ class Reserva{
     }
     public function getAll(): array {
         try {
-            $stmt = $this->pdo->query("SELECT reservas.fecha_reserva, clientes.nombres, tours.nombre, tours.descripcion, tours.ciudad, tours.precio, tours_has_reservas.cantidad_personas,reservas.total FROM tours_has_reservas JOIN reservas ON reservas.id = tours_has_reservas.reserva_id JOIN tours ON tours.id = tours_has_reservas.tour_id JOIN clientes ON clientes.documento = reservas.cliente_documento WHERE reservas.estado = 'Creada'");
+            $stmt = $this->pdo->query("SELECT  asignaciones.idAsignaciones,empleado.nombre,tarea.descripcion_tarea,asignaciones.fecha_asignacion,asignaciones.fecha_entrega,estado.nombre_estado FROM asignaciones 
+JOIN empleado ON empleado.documento=asignaciones.docuemento_empleado
+JOIN estado ON estado.idEstado = asignaciones.idEstado
+JOIN tarea ON  tarea.idTarea = asignaciones.idTarea");
             $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if($reservas){
                 return $reservas;
@@ -30,7 +33,10 @@ class Reserva{
     public function getById($id): ?array {
         if (!is_numeric($id)) return null;
         try {
-            $stmt = $this->pdo->prepare("SELECT reservas.fecha_reserva, clientes.nombres, tours.nombre, tours.descripcion, tours.ciudad, tours.precio, tours_has_reservas.cantidad_personas,reservas.total FROM tours_has_reservas JOIN reservas ON reservas.id = tours_has_reservas.reserva_id JOIN tours ON tours.id = tours_has_reservas.tour_id JOIN clientes ON clientes.documento = reservas.cliente_documento WHERE reservas.id = ? AND reservas.estado = 'Creada'");
+            $stmt = $this->pdo->prepare("SELECT  asignaciones.idAsignaciones,empleado.nombre,tarea.descripcion_tarea,asignaciones.fecha_asignacion,asignaciones.fecha_entrega,estado.nombre_estado FROM asignaciones 
+JOIN empleado ON empleado.documento=asignaciones.docuemento_empleado
+JOIN estado ON estado.idEstado = asignaciones.idEstado
+JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
             $stmt->execute([$id]);
             $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
             if($reserva){
@@ -44,39 +50,21 @@ class Reserva{
         }
     }
     public function create($data): array {
-        $idTour = (int)($data['idTour'] ?? 0);
-        $cantidadPersonas = (int)($data['cantidadPersonas'] ?? 0);
-        $clienteDocumento = (int)($data['clienteDocumento'] ?? 0);
+        $idAsignacion = (int)($data['idAsignacion'] ?? 0);
+        $clienteDocumento = (int)($data['documentoCliente'] ?? 0);
+        $idTarea = (int) ($data["idTarea"] ?? 0);
         try {
-            $stmtValidarTour = $this->pdo->prepare("SELECT * FROM tours WHERE id = ?");
-            $stmtValidarTour->execute([$idTour]);
-            $tour = $stmtValidarTour->fetch(PDO::FETCH_ASSOC);
-            if(!$tour){
-              return ['success' => false, 'error' => 'El Tour no existe'];
-            }
-            $stmtValidarCliente = $this->pdo->prepare("SELECT * FROM clientes WHERE documento = ?");
-            $stmtValidarCliente->execute([$clienteDocumento]);
-            $cliente = $stmtValidarCliente->fetch(PDO::FETCH_ASSOC);
-            if(!$cliente){
-                return ['success' => false, 'error' => 'El cliente no existe'];
-            }
-            $cuposDisponibles = $tour["cupos_totales"];
-            if($cantidadPersonas <= 0 || $cantidadPersonas > $cuposDisponibles){
-                return ['success' => false, 'error' => 'Cantidad de personas no válida o sin cupos disponibles'];
-            }
-            $stmtReserva = $this->pdo->prepare("INSERT INTO reservas (fecha_reserva, cliente_documento, estado) VALUES (NOW(), ?, 'Creada')");
-            $stmtReserva->execute([$clienteDocumento]);
-            $idReservaGenerado = $this->pdo->lastInsertId();
-            $stmtActualizarReserva = $this->pdo->prepare("UPDATE reservas SET total = ? WHERE id = ?");
-            $stmtActualizarReserva->execute([$tour["precio"] * $cantidadPersonas, $idReservaGenerado]);
-            $stmtTours_has_reservas = $this->pdo->prepare("INSERT INTO tours_has_reservas VALUES (?, ?, ?)");
-            $stmtTours_has_reservas->execute([$idReservaGenerado, $idTour, $cantidadPersonas]);
-            $stmtActualizarCantidadTour = $this->pdo->prepare("UPDATE tours SET cupos_totales = ? WHERE id = ?");
-            $stmtActualizarCantidadTour->execute([$cuposDisponibles - $cantidadPersonas, $idTour]);
+
+            $verificarDocumento = $this->pdo->prepare("SELECT * FROM empleado WHERE documento = ?");
+            $verificarDocumento->execute([$clienteDocumento]);
+    
+
+
+
             return ['success' => true, 'message' => 'Reserva creada correctamente'];
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
-            return ['success' => false, 'error' => 'Error en base de datos', 'details' => $e->getMessage()];
+            return ['success' => false, 'error' => 'Error en base de datos culo', 'details' => $e->getMessage()];
         }
     }
     public function update($idReserva, $data): array {

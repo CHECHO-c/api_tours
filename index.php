@@ -36,7 +36,7 @@ switch ($resource) {
     case 'tarea':
         require 'api/ctrTour.php';
         break;
-    case 'reserva':
+    case 'asignacion':
         require 'api/ctrReserva.php';
         break;
     default:
