@@ -15,7 +15,7 @@ class Guia{
     }
     public function getAll(): array {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM guias");
+            $stmt = $this->pdo->query("SELECT * FROM area");
             $guias = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if($guias){
                 return $guias;
@@ -30,7 +30,7 @@ class Guia{
     public function getById($identificacion): ?array {
         if (!is_numeric($identificacion)) return null;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM guias WHERE identificacion = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM area WHERE idArea = ?");
             $stmt->execute([$identificacion]);
             $guia = $stmt->fetch(PDO::FETCH_ASSOC);
             if($guia){
@@ -44,13 +44,13 @@ class Guia{
         }
     }
     public function create($data): bool {
-        $identificacion = (int)($data['identificacion'] ?? 0);
-        $nombres = htmlspecialchars($data['nombres'] ?? '');
-        $apellidos = htmlspecialchars($data['apellidos'] ?? '');
-        $telefono = (int)($data['telefono'] ?? 0);
+        $identificacion = (int)($data['idArea'] ?? 0);
+        $nombres = htmlspecialchars($data['nombre'] ?? '');
+        $apellidos = htmlspecialchars($data['descripcion'] ?? '');
+
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO guias VALUES (?, ?, ?, ?)");
-            return $stmt->execute([$identificacion, $nombres, $apellidos, $telefono]);
+            $stmt = $this->pdo->prepare("INSERT INTO area VALUES (?, ?, ?)");
+            return $stmt->execute([$identificacion, $nombres, $apellidos]);
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
             return false;
@@ -58,12 +58,12 @@ class Guia{
     }
     public function update($identificacion, $data): bool {
         if (!is_numeric($identificacion)) return false;
-        $nombres = htmlspecialchars($data['nombres'] ?? '');
-        $apellidos = htmlspecialchars($data['apellidos'] ?? '');
-        $telefono = (int)($data['telefono'] ?? 0);
+        $nombres = htmlspecialchars($data['nombre'] ?? '');
+        $apellidos = htmlspecialchars($data['descripcion'] ?? '');
+        
         try {
-            $stmt = $this->pdo->prepare("UPDATE guias SET nombres = ?, apellidos = ?, telefono = ? WHERE identificacion = ?");
-            return $stmt->execute([$nombres, $apellidos, $telefono, $identificacion]);
+            $stmt = $this->pdo->prepare("UPDATE area SET nombre_area = ?, descripcion_area = ?  WHERE idArea  = ?");
+            return $stmt->execute([$nombres, $apellidos,  $identificacion]);
         } catch (PDOException $e) {
             error_log("Error en update: " . $e->getMessage());
             return false;
@@ -72,12 +72,12 @@ class Guia{
     public function delete($identificacion): bool {
         if (!is_numeric($identificacion)) return false;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM guias WHERE identificacion = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM area WHERE idArea = ?");
             $stmt->execute([$identificacion]);
             $guia = $stmt->fetch(PDO::FETCH_ASSOC);
             if($guia)
             {
-                $stmt = $this->pdo->prepare("DELETE FROM guias WHERE identificacion = ?");
+                $stmt = $this->pdo->prepare("DELETE FROM area WHERE idArea = ?");
                 return $stmt->execute([$identificacion]);
             }else{
                 return false;

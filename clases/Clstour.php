@@ -15,7 +15,7 @@ class Tour{
     }
     public function getAll(): array {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM tours");
+            $stmt = $this->pdo->query("SELECT * FROM tarea");
             $tours = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if($tours){
                 return $tours;
@@ -30,7 +30,7 @@ class Tour{
     public function getById($id): ?array {
         if (!is_numeric($id)) return null;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM tours WHERE id = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM tarea WHERE idTarea = ?");
             $stmt->execute([$id]);
             $tour = $stmt->fetch(PDO::FETCH_ASSOC);
             if($tour){
@@ -44,15 +44,12 @@ class Tour{
         }
     }
     public function create($data): bool {
-        $nombre = htmlspecialchars($data['nombre'] ?? '');
-        $ciudad = htmlspecialchars($data['ciudad'] ?? '');
         $descripcion = htmlspecialchars($data['descripcion'] ?? '');
-        $precio = (double)($data['precio'] ?? 0.00);
-        $cuposTotales = (int)($data['cupos_totales'] ?? 0);
-        $idGuia = (int)($data['guias_identificacion'] ?? 0);
+        $prioridad = htmlspecialchars($data['prioridad'] ?? '');
+        $idTarea = (int)($data['idTarea'] ?? 0);
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO tours (nombre, ciudad, descripcion, precio, cupos_totales, guias_identificacion) VALUES (?, ?, ?, ?, ?, ?)");
-            return $stmt->execute([$nombre, $ciudad, $descripcion, $precio, $cuposTotales, $idGuia]);
+            $stmt = $this->pdo->prepare("INSERT INTO tarea (descripcion_tarea, prioridad, idTarea) VALUES (?, ?, ?)");
+            return $stmt->execute([$descripcion, $prioridad, $idTarea]);
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
             return false;
@@ -60,15 +57,11 @@ class Tour{
     }
     public function update($id, $data): bool {
         if (!is_numeric($id)) return false;
-        $nombre = htmlspecialchars($data['nombre'] ?? '');
-        $ciudad = htmlspecialchars($data['ciudad'] ?? '');
         $descripcion = htmlspecialchars($data['descripcion'] ?? '');
-        $precio = (double)($data['precio'] ?? 0);
-        $cuposTotales = (int)($data['cupos_totales'] ?? 0);
-        $idGuia = (int)($data['guias_identificacion'] ?? 0);
+        $prioridad = htmlspecialchars($data['prioridad'] ?? '');
         try {
-            $stmt = $this->pdo->prepare("UPDATE tours SET nombre = ?, ciudad = ?, descripcion = ?, precio = ?, cupos_totales = ?, guias_identificacion = ? WHERE id = ?");
-            return $stmt->execute([$nombre, $ciudad, $descripcion, $precio, $cuposTotales, $idGuia, $id]);
+            $stmt = $this->pdo->prepare("UPDATE tarea SET descripcion_tarea = ?, prioridad = ? WHERE idTarea = ?");
+            return $stmt->execute([$descripcion, $prioridad,$id]);
         } catch (PDOException $e) {
             error_log("Error en update: " . $e->getMessage());
             return false;
@@ -77,12 +70,12 @@ class Tour{
     public function delete($id): bool {
         if (!is_numeric($id)) return false;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM tours WHERE id = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM tarea WHERE idTarea = ?");
             $stmt->execute([$id]);
             $tour = $stmt->fetch(PDO::FETCH_ASSOC);
             if($tour)
             {
-                $stmt = $this->pdo->prepare("DELETE FROM tours WHERE id = ?");
+                $stmt = $this->pdo->prepare("DELETE FROM tarea WHERE idTarea = ?");
                 return $stmt->execute([$id]);
             }else{
                 return false;

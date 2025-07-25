@@ -27,13 +27,13 @@ $resource = $uri[1] ?? null;
 $id = $uri[2] ?? null;
 
 switch ($resource) {
-    case 'cliente':
+    case 'empleado':
         require 'api/ctrCliente.php';
         break;
-    case 'guia':
+    case 'area':
         require 'api/ctrGuia.php';
         break;
-    case 'tour':
+    case 'tarea':
         require 'api/ctrTour.php';
         break;
     case 'reserva':

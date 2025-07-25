@@ -15,7 +15,7 @@ class Cliente{
     }
     public function getAll(): array {
         try {
-            $stmt = $this->pdo->query("SELECT * FROM clientes");
+            $stmt = $this->pdo->query("SELECT * FROM empleado");
             $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if($clientes){
                 return $clientes;
@@ -30,7 +30,7 @@ class Cliente{
     public function getById($documento): ?array {
         if (!is_numeric($documento)) return null;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE documento = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM empelado WHERE documento = ?");
             $stmt->execute([$documento]);
             $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
             if($cliente){
@@ -44,14 +44,14 @@ class Cliente{
         }
     }
     public function create($data): bool {
-        $documento = (int)($data['telefono'] ?? 0);
-        $nombres = htmlspecialchars($data['nombres'] ?? '');
-        $apellidos = htmlspecialchars($data['apellidos'] ?? '');
+        $documento = (int)($data['documento'] ?? 0);
+        $nombres = htmlspecialchars($data['nombre'] ?? '');
+        $apellidos = htmlspecialchars($data['apellido'] ?? '');
         $telefono = (int)($data['telefono'] ?? 0);
-        $email = htmlspecialchars($data['email'] ?? '');
+        $idArea = htmlspecialchars($data['idArea'] ?? '');
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO clientes VALUES (?, ?, ?, ?, ?)");
-            return $stmt->execute([$documento, $nombres, $apellidos, $telefono, $email]);
+            $stmt = $this->pdo->prepare("INSERT INTO empleado VALUES (?, ?, ?, ?, ?)");
+            return $stmt->execute([$documento, $nombres, $apellidos, $telefono, $idArea]);
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
             return false;
@@ -59,13 +59,13 @@ class Cliente{
     }
     public function update($documento, $data): bool {
         if (!is_numeric($documento)) return false;
-        $nombres = htmlspecialchars($data['nombres'] ?? '');
-        $apellidos = htmlspecialchars($data['apellidos'] ?? '');
+        $nombres = htmlspecialchars($data['nombre'] ?? '');
+        $apellidos = htmlspecialchars($data['apellido'] ?? '');
         $telefono = (int)($data['telefono'] ?? 0);
-        $email = htmlspecialchars($data['email'] ?? '');
+        $idArea = htmlspecialchars($data['idArea'] ?? '');
         try {
-            $stmt = $this->pdo->prepare("UPDATE clientes SET nombres = ?, apellidos = ?, telefono = ?, email = ? WHERE documento = ?");
-            return $stmt->execute([$nombres, $apellidos, $telefono, $email, $documento]);
+            $stmt = $this->pdo->prepare("UPDATE empleado SET nombre = ?, apellido = ?, telefono = ?, idArea = ? WHERE documento = ?");
+            return $stmt->execute([$nombres, $apellidos, $telefono, $idArea, $documento]);
         } catch (PDOException $e) {
             error_log("Error en update: " . $e->getMessage());
             return false;
@@ -74,11 +74,11 @@ class Cliente{
     public function delete($nroDocumento): bool {
         if (!is_numeric($nroDocumento)) return false;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE documento = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM empleado WHERE documento = ?");
             $stmt->execute([$nroDocumento]);
             $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
             if($cliente){
-                $stmt = $this->pdo->prepare("DELETE FROM clientes WHERE documento = ?");
+                $stmt = $this->pdo->prepare("DELETE FROM empleado WHERE documento = ?");
                 return $stmt->execute([$nroDocumento]);
             }else{
                 return false;

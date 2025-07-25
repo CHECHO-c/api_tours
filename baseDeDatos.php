@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db = 'tours';
+$db = 'tareas';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
