@@ -57,6 +57,16 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
 
             $verificarDocumento = $this->pdo->prepare("SELECT * FROM empleado WHERE documento = ?");
             $verificarDocumento->execute([$clienteDocumento]);
+            $cantidadDocumentos = $verificarDocumento->rowCount();
+
+            if($cantidadDocumentos >0){
+                echo json_encode(["mierda"=>$cantidadDocumentos]);
+                exit();
+            }
+            else{
+                echo json_encode(["mierda"=>$cantidadDocumentos]);
+                exit();
+            }
     
 
 
