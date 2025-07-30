@@ -59,14 +59,13 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
             $verificarDocumento->execute([$clienteDocumento]);
             $cantidadDocumentos = $verificarDocumento->rowCount();
 
-            if($cantidadDocumentos >0){
-                echo json_encode(["mierda"=>$cantidadDocumentos]);
-                exit();
+            if($cantidadDocumentos ==0){
+                return ['succes'=>false, "error"=>"EL documento no existe"];
             }
-            else{
-                echo json_encode(["mierda"=>$cantidadDocumentos]);
-                exit();
-            }
+
+
+            
+            
     
 
 
