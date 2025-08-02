@@ -41,7 +41,7 @@ switch ($resource) {
         break;
     default:
         http_response_code(404);
-        echo json_encode(['error' => 'Recurso no encontrado']);
+        echo json_encode(['error' => 'endpoint incorrecto']);
         break;
 };
 

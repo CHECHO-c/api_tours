@@ -28,6 +28,7 @@ switch ($method) {
                 'details' => $e->getMessage()
             ]);
         }
+        break;
     }elseif(!$idReserva || !is_numeric($idReserva)){
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'ID inválido o no proporcionado']);

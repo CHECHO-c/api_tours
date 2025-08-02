@@ -50,9 +50,11 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
         }
     }
     public function create($data): array {
-        $idAsignacion = (int)($data['idAsignacion'] ?? 0);
         $clienteDocumento = (int)($data['documentoCliente'] ?? 0);
         $idTarea = (int) ($data["idTarea"] ?? 0);
+        $fechaAsignacion = date("Y-m-d H:i:s");
+        $fechaEntrega = $data["fechaEntrega"] ?? date("Y-m-d H:i:s")    ;
+        $estado = (int)$data["idEstado"];
         try {
 
             $verificarDocumento = $this->pdo->prepare("SELECT * FROM empleado WHERE documento = ?");
@@ -60,23 +62,20 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
             $cantidadDocumentos = $verificarDocumento->rowCount();
 
             if($cantidadDocumentos ==0){
-                return ['succes'=>false, "error"=>"EL documento no existe"];
+                return ['success'=>false, "error"=>"EL documento no existe"];
             }
 
-
-            $verificarTarea = $this->pdo->prepare("SELECT * FROM tarea WHERE idTarea =?");
+            $verificarTarea = $this->pdo->prepare("SELECT * FROM tarea WHERE idTarea = ?");
             $verificarTarea->execute([$idTarea]);
             $cantidadTarea = $verificarTarea->rowCount();
 
             if($cantidadTarea==0){
-                return ['succes'=>false, "error"=>"la tarea  no existe"];
+                return ['success'=>false, "error"=>"La tarea no existe"];
             }
-            
-            $stmtCreate = $this->pdo->prepare("INSERT INTO asignacion ");
-    
 
-
-
+            $consulta = "INSERT INTO asignaciones (documento_empleado,idTarea,fecha_asignacion,fecha_entrega,) values (?,?,?,?)";
+            $stmtCrear = $this->pdo->prepare($consulta);
+            $stmtCrear->execute([$clienteDocumento,$idTarea,$fechaAsignacion,$fechaEntrega]);
             return ['success' => true, 'message' => 'Reserva creada correctamente'];
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
