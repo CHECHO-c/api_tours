@@ -64,8 +64,15 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
             }
 
 
+            $verificarTarea = $this->pdo->prepare("SELECT * FROM tarea WHERE idTarea =?");
+            $verificarTarea->execute([$idTarea]);
+            $cantidadTarea = $verificarTarea->rowCount();
+
+            if($cantidadTarea==0){
+                return ['succes'=>false, "error"=>"la tarea  no existe"];
+            }
             
-            
+            $stmtCreate = $this->pdo->prepare("INSERT INTO asignacion ");
     
 
 
