@@ -50,7 +50,7 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
         }
     }
     public function create($data): array {
-        $clienteDocumento = (int)($data['documentoCliente'] ?? 0);
+        $clienteDocumento = (int)($data['documento'] ?? 0);
         $idTarea = (int) ($data["idTarea"] ?? 0);
         $fechaAsignacion = date("Y-m-d H:i:s");
         $fechaEntrega = $data["fechaEntrega"] ?? date("Y-m-d H:i:s")    ;
@@ -73,43 +73,46 @@ JOIN tarea ON  tarea.idTarea = asignaciones.idTarea WHERE idAsignaciones= ?");
                 return ['success'=>false, "error"=>"La tarea no existe"];
             }
 
-            $consulta = "INSERT INTO asignaciones (documento_empleado,idTarea,fecha_asignacion,fecha_entrega,) values (?,?,?,?)";
+            $consulta = "INSERT INTO asignaciones (documento_empleado,idTarea,fecha_asignacion,fecha_entrega,estado) values (?,?,?,?,?)";
             $stmtCrear = $this->pdo->prepare($consulta);
-            $stmtCrear->execute([$clienteDocumento,$idTarea,$fechaAsignacion,$fechaEntrega]);
+            $stmtCrear->execute([$clienteDocumento,$idTarea,$fechaAsignacion,$fechaEntrega,$estado]);
             return ['success' => true, 'message' => 'Reserva creada correctamente'];
         } catch (PDOException $e) {
             error_log("Error en create: " . $e->getMessage());
             return ['success' => false, 'error' => 'Error en base de datos culo', 'details' => $e->getMessage()];
         }
     }
-    public function update($idReserva, $data): array {
-        if (!is_numeric($idReserva)) return ['success' => false, 'error' => 'El ID no es valido'];
-        $clienteDocumento = (int)($data['clienteDocumento'] ?? 0);
+    public function update($idAsignacion, $data): array {
+        if (!is_numeric($idAsignacion)) return ['success' => false, 'error' => 'El ID no es valido'];
+            
+            
+            $fechaEntrega = $data["fechaEntrega"] ?? date("Y-m-d H:i:s")    ;
+            $idEstado = (int)$data["idEstado"];
         try {
-            $stmtValidarCliente = $this->pdo->prepare("SELECT * FROM clientes WHERE documento = ?");
-            $stmtValidarCliente->execute([$clienteDocumento]);
+            $stmtValidarCliente = $this->pdo->prepare("SELECT * FROM asignaciones WHERE idAsignaciones = ?");
+            $stmtValidarCliente->execute([$idAsignacion]);
             $cliente = $stmtValidarCliente->fetch(PDO::FETCH_ASSOC);
             if(!$cliente){
-                return ['success' => false, 'error' => 'El cliente no existe'];
+                return ['success' => false, 'error' => 'la asignacion no existe'];
             }
-            $stmtActualizarReserva = $this->pdo->prepare("UPDATE reservas SET cliente_documento = ? WHERE id = ?");
-            $stmtActualizarReserva->execute([$clienteDocumento, $idReserva]);
-            return ['success' => true, 'message' => 'Reserva actualizada correctamente'];
+            $stmtActualizarReserva = $this->pdo->prepare("UPDATE asignaciones SET fecha_entrega = ?, idEstado=? WHERE id = ?");
+            $stmtActualizarReserva->execute([$fechaEntrega,$idEstado ,$idAsignacion]);
+            return ['success' => true, 'message' => 'asignacion actualizada correctamente'];
         } catch (PDOException $e) {
             error_log("Error en update: " . $e->getMessage());
             return ['success' => false, 'error' => 'Error en base de datos', 'details' => $e->getMessage()];
         }
     }
-    public function delete($idReserva): bool {
-        if (!is_numeric($idReserva)) return false;
+    public function delete($idAsignacion): bool {
+        if (!is_numeric( $idAsignacion)) return false;
         try {
-            $stmt = $this->pdo->prepare("SELECT * FROM reservas WHERE id = ? AND estado = 'Creada'");
-            $stmt->execute([$idReserva]);
+            $stmt = $this->pdo->prepare("SELECT * FROM asignaciones WHERE idAsignaciones = ? AND idEstado = 1 ");
+            $stmt->execute([$idAsignacion]);
             $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
             if($reserva)
             {
-                $stmt = $this->pdo->prepare("UPDATE reservas SET estado = 'Eliminado' WHERE id = ?");
-                return $stmt->execute([$idReserva]);
+                $stmt = $this->pdo->prepare("UPDATE asignaciones SET idEstado = 0 WHERE id = ?");
+                return $stmt->execute([$idAsignacion]);
             }else{
                 return false;
             }
